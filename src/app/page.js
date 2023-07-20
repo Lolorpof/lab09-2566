@@ -10,16 +10,24 @@ import { useState } from "react";
 export default function Home() {
   //tasks = array of {id: string, title: string, completed: boolean}
   const [tasks, setTasks] = useState([]);
+  const [all, setAll] = useState(0);
+  const [done, setDone] = useState(0);
 
   const addTask = (newTaskTitle) => {
     const newTask = { id: nanoid(), title: newTaskTitle, completed: false };
     const newTasks = [...tasks, newTask];
     setTasks(newTasks);
+    countAll(newTasks);
   };
 
   const deleteTask = (taskId) => {
+    const tempTasks = tasks.filter((task) => task.id === taskId);
+    if (tempTasks[0].completed) {
+      setDone(done - 1);
+    }
     const newTasks = tasks.filter((task) => task.id !== taskId);
     setTasks(newTasks);
+    countAll(newTasks);
   };
 
   const toggleDoneTask = (taskId) => {
@@ -30,6 +38,16 @@ export default function Home() {
     const task = newTasks.find((x) => x.id === taskId);
     task.completed = !task.completed;
     setTasks(newTasks);
+    countDone(newTasks);
+  };
+
+  const countDone = (task) => {
+    const newTasks = task.filter((task) => task.completed === true);
+    setDone(newTasks.length);
+  };
+
+  const countAll = (task) => {
+    setAll(task.length);
   };
 
   return (
@@ -41,7 +59,7 @@ export default function Home() {
       <div style={{ maxWidth: "400px" }} className="mx-auto">
         {/* Task summary */}
         <p className="text-center text-secondary fst-italic">
-          All (...) Done (...)
+          All ({all}) Done ({done})
         </p>
         {/* task input */}
         <TaskInput addTaskFunc={addTask} />
